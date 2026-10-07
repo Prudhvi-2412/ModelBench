@@ -1,0 +1,6 @@
+embedding:
+  name: local-hashing
+  model_id: hashing-384
+  provider: hashing # hashing | sentence-transformers
+  device: auto # auto | cpu | cuda
+  dimension: 384

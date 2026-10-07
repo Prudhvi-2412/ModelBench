@@ -1,0 +1,5 @@
+rag:
+  chunk_size: 1000
+  chunk_overlap: 150
+  max_upload_mb: 10
+  qdrant_path: .modelbench/qdrant

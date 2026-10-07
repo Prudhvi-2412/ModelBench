@@ -1,0 +1,8 @@
+model:
+  name: local-development
+  model_id: Qwen/Qwen2.5-0.5B-Instruct
+  provider: mock # mock | transformers
+  device: auto # auto | cpu | cuda
+  temperature: 0.2
+  max_tokens: 256
+  top_p: 0.95
