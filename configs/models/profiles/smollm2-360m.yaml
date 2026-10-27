@@ -1,0 +1,8 @@
+model:
+  name: smollm2-360m-instruct
+  model_id: HuggingFaceTB/SmolLM2-360M-Instruct
+  provider: transformers
+  device: auto
+  temperature: 0.2
+  max_tokens: 256
+  top_p: 0.95

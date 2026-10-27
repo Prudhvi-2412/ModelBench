@@ -1,0 +1,23 @@
+{"id":"gqa-001","question":"What is the capital of Japan?","ground_truth":"Tokyo","contexts":[]}
+{"id":"gqa-002","question":"What is 17 plus 25?","ground_truth":"42","contexts":[]}
+{"id":"gqa-003","question":"Which planet is known as the Red Planet?","ground_truth":"Mars","contexts":[]}
+{"id":"gqa-004","question":"What is 9 multiplied by 6?","ground_truth":"54","contexts":[]}
+{"id":"gqa-005","question":"How many minutes are there in 3 hours?","ground_truth":"180 minutes","contexts":[]}
+{"id":"gqa-006","question":"What is the capital city of France?","ground_truth":"Paris","contexts":[]}
+{"id":"gqa-007","question":"What chemical formula represents water?","ground_truth":"H2O","contexts":[]}
+{"id":"gqa-008","question":"How many meters are in one kilometer?","ground_truth":"1000 meters","contexts":[]}
+{"id":"gqa-009","question":"Which ocean is the largest on Earth?","ground_truth":"The Pacific Ocean","contexts":[]}
+{"id":"gqa-010","question":"Which HTTP status code means that a requested resource was not found?","ground_truth":"404","contexts":[]}
+{"id":"gqa-011","question":"In Python, what does len([1, 2, 3]) return?","ground_truth":"3","contexts":[]}
+{"id":"gqa-012","question":"What is the binary representation of decimal 10?","ground_truth":"1010","contexts":[]}
+{"id":"gqa-013","question":"How many sides does a square have?","ground_truth":"4","contexts":[]}
+{"id":"gqa-014","question":"What is 2 to the fifth power?","ground_truth":"32","contexts":[]}
+{"id":"gqa-015","question":"How many seconds are in one minute?","ground_truth":"60 seconds","contexts":[]}
+{"id":"gqa-016","question":"What is the opposite direction of north?","ground_truth":"South","contexts":[]}
+{"id":"gqa-017","question":"What does CSS stand for in web development?","ground_truth":"Cascading Style Sheets","contexts":[]}
+{"id":"gqa-018","question":"Solve 3x + 4 = 19. What is x?","ground_truth":"5","contexts":[]}
+{"id":"gqa-019","question":"Was 2024 a leap year? Answer yes or no.","ground_truth":"Yes","contexts":[]}
+{"id":"gqa-020","question":"What character starts a level-one heading in Markdown?","ground_truth":"#","contexts":[]}
+{"id":"gqa-021","question":"At sea level, what is the boiling point of pure water in degrees Celsius?","ground_truth":"100 degrees Celsius","contexts":[]}
+{"id":"gqa-022","question":"What kind of celestial object is the Sun?","ground_truth":"A star","contexts":[]}
+{"id":"gqa-023","question":"What is 5 minus 12?","ground_truth":"-7","contexts":[]}

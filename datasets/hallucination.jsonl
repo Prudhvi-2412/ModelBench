@@ -1,0 +1,2 @@
+{"id":"hall-001","question":"What year was the fictional city of Northbridge founded?","ground_truth":"The available context does not say when Northbridge was founded.","contexts":["Northbridge has a public library, a riverwalk, and a yearly spring festival. The source gives no founding date."]}
+{"id":"hall-002","question":"Who is the CEO of Example Company?","ground_truth":"The available context does not identify the CEO of Example Company.","contexts":["Example Company was founded to provide open educational resources. The source does not name its current leadership."]}

@@ -1,0 +1,8 @@
+model:
+  name: qwen-vllm
+  model_id: Qwen/Qwen2.5-0.5B-Instruct
+  provider: vllm
+  api_base_url: http://inference:8001/v1
+  temperature: 0.2
+  max_tokens: 256
+  top_p: 0.95

@@ -1,0 +1,14 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.transformers
+    environment:
+      MODELBENCH_MODEL_CONFIG: /app/configs/models/profiles/smollm2-360m.yaml
+      MODELBENCH_EMBEDDING_CONFIG: /app/configs/models/embeddings/bge-small-en-v1.5.yaml
+      HF_HOME: /models/huggingface
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      MODELBENCH_CORS_ORIGINS: http://localhost:3002,http://127.0.0.1:3002,http://localhost:3003,http://127.0.0.1:3003
+    volumes:
+      - ./.modelbench/huggingface:/models/huggingface:ro

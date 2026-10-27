@@ -28,3 +28,11 @@ The source role description lists possible responsibilities, rather than mandato
 ## Deferred decisions
 
 Exact model IDs, GPU serving defaults, authentication mechanism, and cloud resources should be selected when the relevant milestone is implemented, based on available hardware and practical cost. AWS remains a later optional phase.
+
+## Implemented local topology
+
+The FastAPI process owns request validation and orchestration. Language model runtimes implement a provider interface: a no-download mock supports development, Transformers loads an open-weight causal model in-process, and the vLLM adapter calls a separately hosted OpenAI-compatible endpoint. Embedding providers are similarly interchangeable. This keeps model-runtime dependencies out of the API layer and lets a GPU server be stopped independently.
+
+Qdrant stores vectors and chunk metadata. A deterministic hashing embedding provider supports smoke workflows without downloading weights; sentence-transformers is an optional semantic embedding provider. The local embedded Qdrant mode keeps setup short. Compose selects a Qdrant service through `QDRANT_URL`. Runs are JSON files without infrastructure and PostgreSQL rows when `DATABASE_URL` is set; Redis is only a short-TTL cache for run-history listing, never the source of truth.
+
+Prometheus scrapes HTTP, generation, retrieval, embedding, token-rate and resource metrics. Grafana provisioning loads a ready-to-use dashboard. Open-weight model loading and reranking can download code/weights at first use, so configure trusted model IDs and verify their licenses. Secrets are read from environment/configuration and are not committed.

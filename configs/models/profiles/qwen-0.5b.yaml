@@ -1,0 +1,8 @@
+model:
+  name: qwen-0.5b-instruct
+  model_id: Qwen/Qwen2.5-0.5B-Instruct
+  provider: transformers
+  device: auto
+  temperature: 0.2
+  max_tokens: 256
+  top_p: 0.95

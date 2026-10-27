@@ -1,0 +1,9 @@
+.git
+.venv
+.modelbench
+__pycache__
+*.py[cod]
+frontend/node_modules
+frontend/.next
+frontend/coverage
+tests

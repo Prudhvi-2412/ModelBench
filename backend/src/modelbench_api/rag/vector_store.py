@@ -1,6 +1,7 @@
 import hashlib
+import os
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from qdrant_client import QdrantClient, models
@@ -13,7 +14,13 @@ from .chunking import DocumentChunk
 class LocalVectorStore:
     """Persistent local Qdrant store; collection is isolated per embedding space."""
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, url: str | None = None) -> None:
+        timeout_seconds = int(os.environ.get("MODELBENCH_QDRANT_TIMEOUT_SECONDS", "30"))
+        if not 1 <= timeout_seconds <= 300:
+            raise ValueError("MODELBENCH_QDRANT_TIMEOUT_SECONDS must be from 1 to 300")
+        if url:
+            self.client = QdrantClient(url=url, timeout=timeout_seconds)
+            return
         resolved = Path(path)
         if not resolved.is_absolute():
             resolved = ROOT / resolved
@@ -43,7 +50,7 @@ class LocalVectorStore:
                     size=len(vectors[0]), distance=models.Distance.COSINE
                 ),
             )
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
         points = [
             models.PointStruct(
                 id=str(uuid.uuid4()),
@@ -96,6 +103,37 @@ class LocalVectorStore:
             }
             for point in response.points
         ]
+
+    def all_chunks(
+        self, embedding_settings: EmbeddingSettings, document_id: str | None = None
+    ) -> list[dict]:
+        collection = self.collection_for(embedding_settings)
+        if not self.client.collection_exists(collection):
+            return []
+        query_filter = None
+        if document_id:
+            query_filter = models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="document_id", match=models.MatchValue(value=document_id)
+                    )
+                ]
+            )
+        payloads: list[dict] = []
+        offset = None
+        while True:
+            records, offset = self.client.scroll(
+                collection_name=collection,
+                scroll_filter=query_filter,
+                limit=1000,
+                offset=offset,
+                with_payload=True,
+                with_vectors=False,
+            )
+            payloads.extend(dict(point.payload or {}) for point in records)
+            if offset is None:
+                break
+        return payloads
 
     def close(self) -> None:
         self.client.close()

@@ -1,0 +1,6 @@
+embedding:
+  name: bge-small-en-v1.5
+  model_id: BAAI/bge-small-en-v1.5
+  provider: sentence-transformers
+  device: auto
+  dimension: 384

@@ -10,6 +10,9 @@ class RagSettings(BaseModel):
     chunk_size: int = Field(default=1000, ge=100, le=10000)
     chunk_overlap: int = Field(default=150, ge=0, le=9999)
     max_upload_mb: int = Field(default=10, ge=1, le=100)
+    candidate_k: int = Field(default=20, ge=1, le=200)
+    reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    reranker_device: str = "auto"
     qdrant_path: str = ".modelbench/qdrant"
 
     @model_validator(mode="after")

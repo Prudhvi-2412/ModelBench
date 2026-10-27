@@ -1,0 +1,112 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      MODELBENCH_MODEL_CONFIG: /app/configs/models/default.yaml
+      MODELBENCH_EMBEDDING_CONFIG: /app/configs/models/embedding.yaml
+      MODELBENCH_RAG_CONFIG: /app/configs/rag/default.yaml
+      DATABASE_URL: postgresql://modelbench:modelbench@postgres:5432/modelbench
+      REDIS_URL: redis://redis:6379/0
+      QDRANT_URL: http://qdrant:6333
+      MODELBENCH_QDRANT_TIMEOUT_SECONDS: "30"
+      MODELBENCH_CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+    ports: ["127.0.0.1:8000:8000"]
+    volumes: ["modelbench-results:/app/.modelbench"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      qdrant: { condition: service_started }
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on: [backend]
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: modelbench
+      POSTGRES_USER: modelbench
+      POSTGRES_PASSWORD: modelbench
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U modelbench -d modelbench"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports: ["127.0.0.1:6379:6379"]
+    volumes: ["redis-data:/data"]
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  qdrant:
+    image: qdrant/qdrant:v1.13.6
+    ports: ["127.0.0.1:6333:6333", "127.0.0.1:6334:6334"]
+    volumes: ["qdrant-data:/qdrant/storage"]
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    ports: ["127.0.0.1:9090:9090"]
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on: [backend]
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    ports: ["127.0.0.1:3001:3000"]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: modelbench
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
+
+  # Optional GPU model server. Run with: docker compose --profile gpu up --build
+  inference:
+    image: vllm/vllm-openai:v0.8.5
+    profiles: ["gpu"]
+    command: ["--model", "Qwen/Qwen2.5-0.5B-Instruct", "--host", "0.0.0.0", "--port", "8001", "--dtype", "half", "--max-model-len", "2048", "--gpu-memory-utilization", "0.80"]
+    ports: ["127.0.0.1:8001:8001"]
+    environment: ["HF_HOME=/models/huggingface"]
+    volumes: ["hf-models:/models"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/v1/models', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+volumes:
+  modelbench-results:
+  postgres-data:
+  redis-data:
+  qdrant-data:
+  grafana-data:
+  hf-models:

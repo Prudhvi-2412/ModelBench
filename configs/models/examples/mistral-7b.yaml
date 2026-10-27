@@ -1,0 +1,9 @@
+# Example only: this model is larger than the available 6 GB GPU memory.
+model:
+  name: mistral-7b-instruct
+  model_id: mistralai/Mistral-7B-Instruct-v0.3
+  provider: transformers
+  device: cpu
+  temperature: 0.2
+  max_tokens: 256
+  top_p: 0.95

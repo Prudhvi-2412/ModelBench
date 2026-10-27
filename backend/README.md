@@ -1,39 +1,34 @@
-# Backend API
+# FastAPI platform API
 
-The first milestone exposes a configurable FastAPI inference API. The default `mock` provider runs without downloading a model and clearly labels its output as a development response. It is useful for building the surrounding API and UI, but does not generate real model answers.
-
-## Run locally
-
-From the repository root:
+Install and run from the repository root:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e .\backend
-python -m uvicorn modelbench_api.main:app --app-dir backend\src --reload
+python -m pip install -e "backend[dev]"
+python -m uvicorn modelbench_api.main:app --app-dir backend/src --reload --host 127.0.0.1 --port 8000
 ```
 
-Open `http://127.0.0.1:8000/docs` for the interactive API reference. Set `MODELBENCH_MODEL_CONFIG` to use a different YAML model configuration.
+The no-download `mock` provider and hashing embeddings make CPU development available immediately. Mock completions are not real LLM outputs. Open `/docs` for the generated OpenAPI reference.
 
-## Optional Transformers provider
+## Optional model runtimes
 
-Install `python -m pip install -e ".[transformers]"` from `backend`, then set `provider: transformers` in `configs/models/default.yaml`. The model downloads from Hugging Face on first inference. Use a small model for local experiments; the development GPU has 6 GB of VRAM, so larger model serving is not a reasonable default.
+- Transformers: `python -m pip install -e "backend[transformers]"`, then point `MODELBENCH_MODEL_CONFIG` to a small profile YAML.
+- Semantic embeddings: `python -m pip install -e "backend[embeddings]"`, then set `MODELBENCH_EMBEDDING_CONFIG` to `configs/models/embeddings/bge-small-en-v1.5.yaml` or `e5-small-v2.yaml`.
+- Reranker: `python -m pip install -e "backend[reranking]"`; first use downloads the configured cross-encoder.
+- GPU telemetry: `python -m pip install -e "backend[gpu-metrics]"` for NVML measurements.
+- vLLM: run an OpenAI-compatible vLLM server separately and configure `provider: vllm` plus `api_base_url` in a model profile. Compose provides an optional GPU profile.
 
-## Endpoints
+## Infrastructure
 
-- `GET /api/v1/health`
-- `GET /api/v1/models`
-- `POST /api/v1/generate`
-- `POST /api/v1/chat`
-- `POST /api/v1/embeddings`
-- `POST /api/v1/documents` (multipart upload: `.txt`, `.md`, or `.pdf`)
-- `POST /api/v1/retrieve` (dense vector search)
-- `POST /api/v1/rag/query` (retrieve context, then generate an answer)
+Standalone mode persists Qdrant and result JSON under the repository's `.modelbench/` folder. When `DATABASE_URL` is set, saved evaluations, experiments, and benchmarks go to PostgreSQL; `REDIS_URL` enables a five-second run-history cache. In Docker Compose, these are wired automatically, along with the remote Qdrant service, Prometheus, and Grafana.
 
-Requests accept temperature, max_tokens, top_p, optional model selection, and a stream flag. Streaming uses SSE and emits delta events followed by a done event containing the final metadata. Token counts are approximate whitespace counts in this initial milestone; provider-native token accounting is a later improvement.
+To enable the optional API key check, set `MODELBENCH_API_KEY` in the process environment and provide it as a bearer token or `X-API-Key`; only `/api/v1/health` remains public. Do not place secrets in tracked files.
 
-The embedding endpoint uses offline feature hashing by default so its API can be developed without a model download. This is a lexical baseline, not a semantic embedding model. To use a real Sentence Transformers model, install `python -m pip install -e .[embeddings]` from `backend` and set `provider: sentence-transformers` and `model_id` in `configs/models/embedding.yaml` (for example, a BGE or E5 model).
+## Principal routes
 
-Document uploads are parsed, split using `configs/rag/default.yaml`, embedded, and stored in a persistent local Qdrant collection under `.modelbench/qdrant`. PDF page numbers and document/chunk metadata are retained in point payloads. The default local store is intended for a single development API process; a Qdrant server can be configured as a later deployment option.
+- `GET /api/v1/health`, `/models`, `/embedding-models`, `/datasets`, `/runs`, `/failures`, `/system`
+- `POST /api/v1/generate`, `/chat`, `/embeddings`
+- `POST /api/v1/documents`, `/retrieve`, `/retrieval/compare`, `/rag/query`
+- `POST /api/v1/evaluations/run`, `/benchmarks/run`, `/experiments/run`
+- `GET /metrics` for Prometheus
 
-The retrieval endpoint embeds a query with the active embedding model and returns dense cosine-similarity matches. The RAG endpoint adds the retrieved chunks to a grounded prompt and returns the model response with source metadata and retrieval timing. BM25, hybrid search, and reranking are planned additions.
+See the root README and the architecture, inference, RAG, evaluation, benchmarking, experiments, and failure-analysis docs for the rationale and known limits.

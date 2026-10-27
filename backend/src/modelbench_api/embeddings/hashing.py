@@ -2,6 +2,7 @@ import asyncio
 import hashlib
 import math
 import re
+from itertools import pairwise
 
 from .base import EmbeddingProvider
 
@@ -16,7 +17,7 @@ class HashingEmbeddingProvider(EmbeddingProvider):
         vector = [0.0] * self._dimensions
         terms = re.findall(r"\w+", text.lower())
         # Add unigrams and adjacent bigrams; this remains a lexical baseline.
-        features = terms + [f"{left}_{right}" for left, right in zip(terms, terms[1:])]
+        features = terms + [f"{left}_{right}" for left, right in pairwise(terms)]
         for feature in features:
             digest = hashlib.blake2b(feature.encode("utf-8"), digest_size=8).digest()
             value = int.from_bytes(digest, "little")

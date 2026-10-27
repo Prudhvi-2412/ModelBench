@@ -1,0 +1,9 @@
+# Example only: Llama weights may require accepting the Meta license on Hugging Face.
+model:
+  name: llama-3.2-1b-instruct
+  model_id: meta-llama/Llama-3.2-1B-Instruct
+  provider: transformers
+  device: auto
+  temperature: 0.2
+  max_tokens: 256
+  top_p: 0.95

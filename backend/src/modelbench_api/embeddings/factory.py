@@ -1,7 +1,7 @@
+from ..embedding_settings import EmbeddingSettings
 from .base import EmbeddingProvider
 from .hashing import HashingEmbeddingProvider
 from .sentence_transformers import SentenceTransformersProvider
-from ..embedding_settings import EmbeddingSettings
 
 
 def create_embedding_provider(settings: EmbeddingSettings) -> EmbeddingProvider:

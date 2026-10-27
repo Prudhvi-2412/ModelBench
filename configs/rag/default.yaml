@@ -2,4 +2,7 @@ rag:
   chunk_size: 1000
   chunk_overlap: 150
   max_upload_mb: 10
+  candidate_k: 20
+  reranker_model: cross-encoder/ms-marco-MiniLM-L-6-v2
+  reranker_device: auto
   qdrant_path: .modelbench/qdrant

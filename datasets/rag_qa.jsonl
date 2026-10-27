@@ -1,0 +1,3 @@
+{"id":"rag-001","question":"How long can a library book be borrowed?","ground_truth":"Books can be borrowed for 21 days.","contexts":["Library books may be borrowed for 21 days and renewed once if no one else has requested them."]}
+{"id":"rag-002","question":"When does the help desk open?","ground_truth":"The help desk opens at 9:00 AM on weekdays.","contexts":["The help desk is open from 9:00 AM to 5:00 PM Monday through Friday."]}
+{"id":"rag-003","question":"What is the office Wi-Fi network name?","ground_truth":"The office Wi-Fi network is ModelBench-Guest.","contexts":["Visitors should connect to the ModelBench-Guest Wi-Fi network. Ask reception for the current access code."]}

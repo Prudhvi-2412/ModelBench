@@ -1,0 +1,13 @@
+{
+  "title": "Model Bench API",
+  "uid": "modelbench-api",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {"id":1,"type":"timeseries","title":"HTTP requests / second","gridPos":{"h":8,"w":12,"x":0,"y":0},"targets":[{"expr":"sum by (route) (rate(modelbench_http_requests_total[1m]))","legendFormat":"{{route}}"}]},
+    {"id":2,"type":"timeseries","title":"HTTP latency P95 (seconds)","gridPos":{"h":8,"w":12,"x":12,"y":0},"targets":[{"expr":"histogram_quantile(0.95, sum by (le, route) (rate(modelbench_http_request_duration_seconds_bucket[5m])))","legendFormat":"{{route}}"}]},
+    {"id":3,"type":"timeseries","title":"Generation / retrieval / embedding / reranking latency","gridPos":{"h":8,"w":12,"x":0,"y":8},"targets":[{"expr":"histogram_quantile(0.95, sum by (le) (rate(modelbench_generation_duration_seconds_bucket[5m])))","legendFormat":"generation p95"},{"expr":"histogram_quantile(0.95, sum by (le) (rate(modelbench_retrieval_duration_seconds_bucket[5m])))","legendFormat":"retrieval p95"},{"expr":"histogram_quantile(0.95, sum by (le) (rate(modelbench_embedding_duration_seconds_bucket[5m])))","legendFormat":"embedding p95"},{"expr":"histogram_quantile(0.95, sum by (le) (rate(modelbench_reranking_duration_seconds_bucket[5m])))","legendFormat":"reranking p95"}]},
+    {"id":4,"type":"timeseries","title":"Active requests","gridPos":{"h":8,"w":12,"x":12,"y":8},"targets":[{"expr":"modelbench_active_requests","legendFormat":"active"}]}
+  ]
+}

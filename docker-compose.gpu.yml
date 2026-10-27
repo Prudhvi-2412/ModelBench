@@ -1,0 +1,4 @@
+services:
+  backend:
+    environment:
+      MODELBENCH_MODEL_CONFIG: /app/configs/models/vllm.yaml

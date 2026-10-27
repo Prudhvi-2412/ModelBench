@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field
 
 from .settings import ROOT
 
-
 DEFAULT_EMBEDDING_CONFIG = ROOT / "configs" / "models" / "embedding.yaml"
 
 
